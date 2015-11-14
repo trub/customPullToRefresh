@@ -13,6 +13,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     @IBOutlet weak var tblDemo: UITableView!
     
+    var customView: UIView!
+    
+    var labelsArray: Array<UILabel> = []
+    
     var dataArray: Array<String> = ["One", "Two", "Three", "Four", "Five"]
     
     var refreshControl: UIRefreshControl!
@@ -21,16 +25,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //additional setup
     
         tblDemo.delegate = self
         tblDemo.dataSource = self
         
         refreshControl = UIRefreshControl()
-        
-        refreshControl.backgroundColor = UIColor.purpleColor()
-        refreshControl.tintColor = UIColor.yellowColor()
-        
+        refreshControl.backgroundColor = UIColor.clearColor()
+        refreshControl.tintColor = UIColor.clearColor()
         tblDemo.addSubview(refreshControl)
+        
+        loadCustomRefreshContents()
     }
 
     override func didReceiveMemoryWarning() {
@@ -38,6 +43,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Dispose of any resources that can be recreated.
     }
 
+    //MARK: custom functions
+    
+    func loadCustomRefreshContents() {
+        let refreshContents = NSBundle.mainBundle().loadNibNamed("RefreshContents", owner: self, options: nil)
+        
+        customView = refreshContents[0] as! UIView
+        customView.frame = refreshControl.bounds
+        
+        for var i=0; i<customView.subviews.count;i++ {
+            labelsArray.append(customView.viewWithTag(i+1) as! UILabel)
+        }
+        
+        refreshControl.addSubview(customView)
+    }
     
     
     //MARK: table view functions
@@ -62,5 +81,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 60.0
     }
+    
 }
 
