@@ -13,14 +13,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     @IBOutlet weak var tblDemo: UITableView!
     
-    var customView: UIView!
+    var isAnimating = false
+    var currentColorIndex = 0
+    var currentLabelIndex = 0
     
+    var customView: UIView!
     var labelsArray: Array<UILabel> = []
     
     var dataArray: Array<String> = ["One", "Two", "Three", "Four", "Five"]
-    
     var refreshControl: UIRefreshControl!
-    
+
     // MARK: setup functions
     
     override func viewDidLoad() {
@@ -57,6 +59,93 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         refreshControl.addSubview(customView)
     }
+    
+    //MARK: animation functions
+    
+    func animateRefreshStep1() {
+        isAnimating = true
+        
+        UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
+                self.labelsArray[self.currentLabelIndex].transform = CGAffineTransformMakeRotation(CGFloat(M_PI_4))
+                self.labelsArray[self.currentLabelIndex].textColor = self.getNextColor()
+            
+            }, completion:  { (finished) -> Void in
+                
+                UIView.animateWithDuration(0.05, delay: 0.0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
+                    self.labelsArray[self.currentLabelIndex].transform = CGAffineTransformIdentity
+                    self.labelsArray[self.currentLabelIndex].textColor = UIColor.blackColor()
+                    }, completion: { (finished) -> Void in
+                        ++self.currentLabelIndex
+                        
+                        if self.currentLabelIndex < self.labelsArray.count {
+                            self.animateRefreshStep1()
+                        }
+                        else {
+                            self.animateRefreshStep2()
+                        }
+                })
+        })
+    }
+    
+    
+    func animateRefreshStep2() {
+        UIView.animateWithDuration(0.35, delay: 0.0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
+            self.labelsArray[0].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            self.labelsArray[1].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            self.labelsArray[2].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            self.labelsArray[3].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            self.labelsArray[4].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            self.labelsArray[5].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            self.labelsArray[6].transform = CGAffineTransformMakeScale(1.5, 1.5)
+            
+            }, completion: { (finished) -> Void in
+                UIView.animateWithDuration(0.25, delay: 0.0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
+                    self.labelsArray[0].transform = CGAffineTransformIdentity
+                    self.labelsArray[1].transform = CGAffineTransformIdentity
+                    self.labelsArray[2].transform = CGAffineTransformIdentity
+                    self.labelsArray[3].transform = CGAffineTransformIdentity
+                    self.labelsArray[4].transform = CGAffineTransformIdentity
+                    self.labelsArray[5].transform = CGAffineTransformIdentity
+                    self.labelsArray[6].transform = CGAffineTransformIdentity
+                    
+                    }, completion: { (finished) -> Void in
+                        if self.refreshControl.refreshing {
+                            self.currentLabelIndex = 0
+                            self.animateRefreshStep1()
+                        }
+                        else {
+                            self.isAnimating = false
+                            self.currentLabelIndex = 0
+                            for var i=0; i<self.labelsArray.count; ++i {
+                                self.labelsArray[i].textColor = UIColor.blackColor()
+                                self.labelsArray[i].transform = CGAffineTransformIdentity
+                            }
+                        }
+                })
+        })
+    }
+    
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        if refreshControl.refreshing {
+            if !isAnimating {
+                animateRefreshStep1()
+            }
+        }
+    }
+    
+    func getNextColor() -> UIColor {
+        var colorsArray: Array<UIColor> = [UIColor.magentaColor(), UIColor.redColor(), UIColor.yellowColor(), UIColor.purpleColor(), UIColor.greenColor(), UIColor.blackColor(), UIColor.orangeColor()]
+        
+        if currentColorIndex == colorsArray.count {
+            currentColorIndex = 0
+        }
+        
+        let returnColor = colorsArray[currentColorIndex]
+        ++currentColorIndex
+        
+        return returnColor
+    }
+
     
     
     //MARK: table view functions
