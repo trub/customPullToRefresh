@@ -26,6 +26,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tblDemo.dataSource = self
         
         refreshControl = UIRefreshControl()
+        
+        refreshControl.backgroundColor = UIColor.purpleColor()
+        refreshControl.tintColor = UIColor.yellowColor()
+        
         tblDemo.addSubview(refreshControl)
     }
 
