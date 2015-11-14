@@ -14,13 +14,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var tblDemo: UITableView!
     
     var dataArray: Array<String> = ["One", "Two", "Three", "Four", "Five"]
-
+    
+    var refreshControl: UIRefreshControl!
+    
+    // MARK: setup functions
     
     override func viewDidLoad() {
         super.viewDidLoad()
     
         tblDemo.delegate = self
         tblDemo.dataSource = self
+        
+        refreshControl = UIRefreshControl()
+        tblDemo.addSubview(refreshControl)
     }
 
     override func didReceiveMemoryWarning() {
