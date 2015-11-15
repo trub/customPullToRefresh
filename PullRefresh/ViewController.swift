@@ -13,6 +13,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     @IBOutlet weak var tblDemo: UITableView!
     
+    //MARK: declarations
+    
+    var timer: NSTimer!
+    
     var isAnimating = false
     var currentColorIndex = 0
     var currentLabelIndex = 0
@@ -46,6 +50,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     //MARK: custom functions
+    
+    func doSomething() {
+        timer = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: "endOfWork", userInfo: nil, repeats: true)
+    }
+    
+    func endOfWork() {
+        refreshControl.endRefreshing()
+        
+        timer.invalidate()
+        timer = nil
+    }
+
     
     func loadCustomRefreshContents() {
         let refreshContents = NSBundle.mainBundle().loadNibNamed("RefreshContents", owner: self, options: nil)
@@ -128,6 +144,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
         if refreshControl.refreshing {
             if !isAnimating {
+                doSomething()
                 animateRefreshStep1()
             }
         }
